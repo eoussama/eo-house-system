@@ -15,15 +15,12 @@
                                             @github repository:     
 
 */
-
-#pragma disablerecursion
-
 #define FILTERSCRIPT
 #if defined FILTERSCRIPT
 
 // Libraries ---------------------------------------------------------------------------------------------------------------
 #include <a_samp>
-
+#include "utils/eo_house.inc"
 
 
 #endif
