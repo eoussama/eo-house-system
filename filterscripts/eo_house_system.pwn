@@ -12,8 +12,9 @@
                                             @title:                 EO House System
                                             @author:                EOussama a.k.a Compton
                                             @date:                  4/3/2018
-                                            @github repository:     
+                                            @github repository:     https://github.com/EOussama/EO-House-System
 
+                                            > House filterscript
 */
 #define FILTERSCRIPT
 #if defined FILTERSCRIPT

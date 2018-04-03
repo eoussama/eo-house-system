@@ -14,6 +14,5 @@
                                             @date:                  4/3/2018
                                             @github repository:     https://github.com/EOussama/EO-House-System
 
-                                            > House include
-
+                                            > Database structure
 */
