@@ -1,12 +1,2 @@
-gamemodes/
-include/
-npcmodes/
-pawno/
-scriptfiles/
-announce.exe
-samp-license.txt
-server_log.txt
-samp-npc.exe
-samp-server.exe
-server.cfg
-start.bat
+*
+!filterscripts/
