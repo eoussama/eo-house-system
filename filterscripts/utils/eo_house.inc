@@ -19,7 +19,8 @@
 */
 
 // Constants -----------------------------------
-#define MAX_HOUSES	500
+#define MAX_INTERIORS 	17
+#define MAX_HOUSES 		500
 
 #define TYPE_EXTERIOR	0
 #define TYPE_INTERIOR	1
@@ -30,6 +31,12 @@ enum E_COORDINATES
 	Float:e_posX,
 	Float:e_posY,
 	Float:e_posZ
+}
+
+enum E_INTERIOR {
+	e_intId,
+	e_intLabel[30],
+	e_intPos[E_COORDINATES]
 }
 
 enum E_HOUSE
@@ -46,7 +53,28 @@ enum E_HOUSE
 }
 
 // Variables -----------------------------------
-static hInfo[MAX_HOUSES][E_HOUSE];
+new
+	intInfo[MAX_INTERIORS][E_INTERIOR] = {
+		{1, "Denise room", {244.411987, 305.032989, 999.148437} },
+		{2, "Katie room", {271.884979, 306.631988, 999.148437} },
+		{3, "Helena room", {291.282989, 310.031982, 999.148437} },
+		{4, "Michelle room", {302.180999, 300.722991, 999.148437} },
+		{5, "Barbara room", {322.197998, 302.497985, 999.148437} },
+		{6, "Millie room", {346.870025, 309.259033, 999.155700} },
+		{3, "B Dup's house", {1523.509887, -47.821197, 1002.130981} },
+		{2, "B Dup's crack pad", {1523.509887, -47.821197, 1002.130981 } },
+		{3, "Cj's house", {2496.049804, -1695.238159, 1014.742187} },
+		{5, "Madd Doggs mansion", {1267.663208, -781.323242, 1091.906250} },
+		{3, "Og Loc's house", {513.882507, -11.269994, 1001.565307} },
+		{2, "Ryders house", {2454.717041, -1700.871582, 1013.515197} },
+		{1, "Sweet's house", {2527.654052, -1679.388305, 1015.498596} },
+		{5, "Gang house", {2350.339843, -1181.649902, 1027.976562} },
+		{8, "Colonel Furhberger's", {2807.619873, -1171.899902, 1025.570312} },
+		{5, "Crack den", {318.564971, 1118.209960, 1083.882812} },
+		{12, "Unused safe house", {2324.419921, -1145.568359, 1050.710083} }
+	},
+	hInfo[MAX_HOUSES][E_HOUSE];
+
 
 // Functions -----------------------------------
 stock getHouseOwner(houseid)
