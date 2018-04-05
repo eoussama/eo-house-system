@@ -19,8 +19,12 @@
 */
 
 // Constants -----------------------------------
-#define MAX_INTERIORS 	17
+#define MAX_INTERIORS 	28
 #define MAX_HOUSES 		500
+
+#define ICON_FOR_SALE	1273
+#define ICON_SOLD		1272
+#define ICON_CLOSED		19522
 
 #define TYPE_EXTERIOR	0
 #define TYPE_INTERIOR	1
@@ -36,14 +40,14 @@ enum E_COORDINATES
 enum E_INTERIOR {
 	e_intId,
 	e_intLabel[30],
-	e_intPos[E_COORDINATES]
+	Float:e_intPos[E_COORDINATES]
 }
 
 enum E_HOUSE
 {
 	e_ownerid,
-	e_extPos[E_COORDINATES],
-	e_intPos[E_COORDINATES],
+	Float:e_extPos[E_COORDINATES],
+	Float:e_intPos[E_COORDINATES],
 	e_extVW,
 	e_extInt,
 	e_intVW,
@@ -54,26 +58,40 @@ enum E_HOUSE
 
 // Variables -----------------------------------
 new
-	intInfo[MAX_INTERIORS][E_INTERIOR] = {
+	const intInfo[MAX_INTERIORS][E_INTERIOR] = {
 		{1, "Denise room", {244.411987, 305.032989, 999.148437} },
-		{2, "Katie room", {271.884979, 306.631988, 999.148437} },
-		{3, "Helena room", {291.282989, 310.031982, 999.148437} },
+		{2, "Katie room", {266.7248, 305.0676, 999.1484} },
+		{3, "Helena room", {292.8466, 310.1198, 999.1484} },
 		{4, "Michelle room", {302.180999, 300.722991, 999.148437} },
-		{5, "Barbara room", {322.197998, 302.497985, 999.148437} },
-		{6, "Millie room", {346.870025, 309.259033, 999.155700} },
-		{3, "B Dup's house", {1523.509887, -47.821197, 1002.130981} },
-		{2, "B Dup's crack pad", {1523.509887, -47.821197, 1002.130981 } },
-		{3, "Cj's house", {2496.049804, -1695.238159, 1014.742187} },
-		{5, "Madd Doggs mansion", {1267.663208, -781.323242, 1091.906250} },
-		{3, "Og Loc's house", {513.882507, -11.269994, 1001.565307} },
-		{2, "Ryders house", {2454.717041, -1700.871582, 1013.515197} },
-		{1, "Sweet's house", {2527.654052, -1679.388305, 1015.498596} },
-		{5, "Gang house", {2350.339843, -1181.649902, 1027.976562} },
-		{8, "Colonel Furhberger's", {2807.619873, -1171.899902, 1025.570312} },
-		{5, "Crack den", {318.564971, 1118.209960, 1083.882812} },
-		{12, "Unused safe house", {2324.419921, -1145.568359, 1050.710083} }
-	},
-	hInfo[MAX_HOUSES][E_HOUSE];
+		{6, "Millie room", {343.8689, 304.8184, 999.1484} },
+		{3, "B Dup's house", {1531.2728, -6.8206, 1002.0971} },
+		{2, "B Dup's crack pad", {1520.4670, -48.1052, 1002.1310} },
+		{3, "Cj's house", {2495.9702, -1692.3313, 1014.7422} },
+		{5, "Madd Doggs mansion", {1260.6549, -785.7318, 1091.9063} },
+		{3, "Og Loc's house", {516.9117, -14.9512, 1001.5653} },
+		{2, "Ryders house", {2468.8284, -1698.1252, 1013.5078} },
+		{1, "Sweet's house", {2524.1548, -1679.2579, 1015.4986} },
+		{5, "Gang house", {2352.6592, -1181.0431, 1027.9766} },
+		{8, "Colonel Furhberger's", {2807.7183, -1174.7272, 1025.5703} },
+		{5, "Crack den", {318.5060, 1114.6956, 1083.8828} },
+		{12, "Unused safe house", {2324.5520, -1149.5435, 1050.7101} },
+		{3, "Burglary house 1", {235.3611, 1186.6804, 1080.2578} },
+		{2, "Burglary house 2", {226.7767, 1239.9183, 1082.1406} },
+		{1, "Burglary house 3", {222.9783, 1287.0762, 1082.1406} },
+		{7, "Burglary house 4", {225.5619, 1021.6281, 1084.0172} },
+		{15, "Burglary house 5", {295.3352, 1472.2603, 1080.2578} },
+		{15, "Burglary house 6", {327.9531, 1477.7252, 1084.4375} },
+		{15, "Burglary house 7", {387.1272, 1471.7672, 1080.1875} },
+		{1, "Woozies Apartment", {-2159.0950, 643.1011, 1052.3750} },
+		{9, "Golden bed motel room", {2255.4873, -1139.9259, 1050.6328} },
+		{10, "Hashbury House", {2270.3167, -1210.4602, 1047.5625} },
+		{10, "Red Bed Motel Room", {2259.4170, -1135.7371, 1050.6403} },
+		{8, "Verdant Bluffs Safehouse", {2365.4050, -1135.5947, 1050.8826} }
+	};
+
+new
+	hInfo[MAX_HOUSES][E_HOUSE],
+	Iterator:House<MAX_PLAYERS>;
 
 
 // Functions -----------------------------------
@@ -202,9 +220,13 @@ stock CreateHouse(MySQL:sqlHandle, houseid, ownerid, Float:extX, Float:extY, Flo
 	new query[300];
 
 	Iter_Add(House, houseid);
-	hInfo[houseid][ownerid] = ownerid;
-	hInfo[houseid][e_extPos] = {extX, extY, extZ};
-	hInfo[houseid][e_intPos] = {intX, intY, intZ};
+	hInfo[houseid][e_ownerid] = ownerid;
+	hInfo[houseid][e_extPos][e_posX] = extX;
+	hInfo[houseid][e_extPos][e_posY] = extY;
+	hInfo[houseid][e_extPos][e_posZ] = extZ;
+	hInfo[houseid][e_intPos][e_posX] = intX;
+	hInfo[houseid][e_intPos][e_posY] = intY;
+	hInfo[houseid][e_intPos][e_posZ] = intZ;
 	hInfo[houseid][e_extVW] = extVW;
 	hInfo[houseid][e_intVW] = intVW;
 	hInfo[houseid][e_extInt] = extInt;
@@ -212,7 +234,7 @@ stock CreateHouse(MySQL:sqlHandle, houseid, ownerid, Float:extX, Float:extY, Flo
 	hInfo[houseid][e_cost] = cost;
 	hInfo[houseid][e_locked] = locked;
 
-	mysql_format(sqlHandle, query, "INSERT INTO `Houses` VALUES(%d, %d, %f, %f, %f, %f, %f, %f, %d, %d, %d, %d, %d, %d);", houseid, ownerid, extX, extY, extZ, intX, intY, intZ, extVW, extInt, intVW, intInt, cost, locked);
+	mysql_format(sqlHandle, query, sizeof(query), "INSERT INTO `Houses` VALUES(%d, %d, %f, %f, %f, %f, %f, %f, %d, %d, %d, %d, %d, %d);", houseid, ownerid, extX, extY, extZ, intX, intY, intZ, extVW, extInt, intVW, intInt, cost, locked);
 	mysql_query(sqlHandle, query);
 }
 
