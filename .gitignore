@@ -1,3 +1,4 @@
 *
+.vscode/
 !filterscripts/utils
 !filterscripts/eo_house_system.pwn
