@@ -22,9 +22,13 @@
 #define MAX_INTERIORS 	28
 #define MAX_HOUSES 		500
 
-#define ICON_FOR_SALE	1273
-#define ICON_SOLD		1272
-#define ICON_CLOSED		19522
+#define PICKUP_FOR_SALE	1273
+#define PICKUP_SOLD		1272
+#define PICKUP_OWNED	1318
+#define PICKUP_CLOSED	19522
+
+#define ICON_FOR_SALE	31
+#define ICON_SOLD		32
 
 #define TYPE_EXTERIOR	0
 #define TYPE_INTERIOR	1
@@ -126,7 +130,7 @@ stock getHouseCoordinates(houseid, &Float:posX, &Float:posY, &Float:posZ, type)
 	}
 }
 
-stock setHouseCoordinates(houseid, &Float:posX, &Float:posY, &Float:posZ, type)
+stock setHouseCoordinates(houseid, Float:posX, Float:posY, Float:posZ, type)
 {
 	new oldCoordinates[E_COORDINATES];
 
@@ -134,14 +138,24 @@ stock setHouseCoordinates(houseid, &Float:posX, &Float:posY, &Float:posZ, type)
 	{
 		case TYPE_EXTERIOR :
 		{
-			oldCoordinates = {hInfo[houseid][e_intX], hInfo[houseid][e_intY], hInfo[houseid][e_intZ]};
-			hInfo[houseid][e_extPos] = {posX, posY, posZ};
+			oldCoordinates[e_posX] = hInfo[houseid][e_extPos][e_posX];
+			oldCoordinates[e_posY] = hInfo[houseid][e_extPos][e_posY];
+			oldCoordinates[e_posZ] = hInfo[houseid][e_extPos][e_posZ];
+			
+			hInfo[houseid][e_extPos][e_posX] = posX;
+			hInfo[houseid][e_extPos][e_posY] = posY;
+			hInfo[houseid][e_extPos][e_posZ] = posZ;
 		}
 
 		case TYPE_INTERIOR :
 		{
-			oldCoordinates = {hInfo[houseid][e_intX], hInfo[houseid][e_intY], hInfo[houseid][e_intZ]};
-			hInfo[houseid][e_extPos] = {posX, posY, posZ};
+			oldCoordinates[e_posX] = hInfo[houseid][e_intPos][e_posX];
+			oldCoordinates[e_posY] = hInfo[houseid][e_intPos][e_posY];
+			oldCoordinates[e_posZ] = hInfo[houseid][e_intPos][e_posZ];
+			
+			hInfo[houseid][e_intPos][e_posX] = posX;
+			hInfo[houseid][e_intPos][e_posY] = posY;
+			hInfo[houseid][e_intPos][e_posZ] = posZ;
 		}
 	}
 
@@ -159,14 +173,14 @@ stock setHouseVirtualWorld(houseid, virtualWorld, type)
 	{
 		case TYPE_EXTERIOR :
 		{
-			oldVW = hInfo[houseid][extVW];
-			hInfo[houseid][extVW] = virtualWorld;
+			oldVW = hInfo[houseid][e_extVW];
+			hInfo[houseid][e_extVW] = virtualWorld;
 		}
 
 		case TYPE_INTERIOR :
 		{
-			oldVW = hInfo[houseid][intVW];
-			hInfo[houseid][intVW] = virtualWorld;
+			oldVW = hInfo[houseid][e_intVW];
+			hInfo[houseid][e_intVW] = virtualWorld;
 		}
 	}
 
@@ -184,14 +198,14 @@ stock setHouseInterior(houseid, virtualWorld, type)
 	{
 		case TYPE_EXTERIOR :
 		{
-			oldInt = hInfo[houseid][extInt];
-			hInfo[houseid][extInt] = virtualWorld;
+			oldInt = hInfo[houseid][e_extInt];
+			hInfo[houseid][e_extInt] = virtualWorld;
 		}
 
 		case TYPE_INTERIOR :
 		{
-			oldInt = hInfo[houseid][intInt];
-			hInfo[houseid][intInt] = virtualWorld;
+			oldInt = hInfo[houseid][e_intInt];
+			hInfo[houseid][e_intInt] = virtualWorld;
 		}
 	}
 
@@ -215,27 +229,28 @@ stock isHouseLocked(houseid)
 stock LockHouse(houseid, bool:_state)
     hInfo[houseid][e_locked] = _state;
 
-stock CreateHouse(MySQL:sqlHandle, houseid, ownerid, Float:extX, Float:extY, Float:extZ, Float:intX, Float:intY, Float:intZ, extVW, extInt, intVW, intInt, cost, bool:locked = true)
+stock CreateHouse(houseid, ownerid, Float:extX, Float:extY, Float:extZ, Float:intX, Float:intY, Float:intZ, extVW, extInt, intVW, intInt, cost, bool:locked = true)
 {
-	new query[300];
-
 	Iter_Add(House, houseid);
-	hInfo[houseid][e_ownerid] = ownerid;
-	hInfo[houseid][e_extPos][e_posX] = extX;
-	hInfo[houseid][e_extPos][e_posY] = extY;
-	hInfo[houseid][e_extPos][e_posZ] = extZ;
-	hInfo[houseid][e_intPos][e_posX] = intX;
-	hInfo[houseid][e_intPos][e_posY] = intY;
-	hInfo[houseid][e_intPos][e_posZ] = intZ;
-	hInfo[houseid][e_extVW] = extVW;
-	hInfo[houseid][e_intVW] = intVW;
-	hInfo[houseid][e_extInt] = extInt;
-	hInfo[houseid][e_intInt] = intInt;
-	hInfo[houseid][e_cost] = cost;
-	hInfo[houseid][e_locked] = locked;
+	setHouseOwner(houseid, ownerid);
+	setHouseCost(houseid, cost);
+	setHouseCoordinates(houseid, extX, extY, extZ, TYPE_EXTERIOR);
+	setHouseCoordinates(houseid, intX, intY, intZ, TYPE_INTERIOR);
+	setHouseInterior(houseid, extInt, TYPE_EXTERIOR);
+	setHouseInterior(houseid, intInt, TYPE_INTERIOR);
+	setHouseVirtualWorld(houseid, extVW, TYPE_EXTERIOR);
+	setHouseVirtualWorld(houseid, intVW, TYPE_INTERIOR);
+	LockHouse(houseid, locked);
 
-	mysql_format(sqlHandle, query, sizeof(query), "INSERT INTO `Houses` VALUES(%d, %d, %f, %f, %f, %f, %f, %f, %d, %d, %d, %d, %d, %d);", houseid, ownerid, extX, extY, extZ, intX, intY, intZ, extVW, extInt, intVW, intInt, cost, locked);
-	mysql_query(sqlHandle, query);
+	new label[200], costString[50];
+
+	format(costString, sizeof(costString), "{FFFF00}$%d", cost);
+	format(label, sizeof(label), "%s{FFFFFF}\nPress 'N' to interact", ownerid == -1 ? costString : "");
+	CreateDynamicPickup(ownerid == -1 ? PICKUP_FOR_SALE : PICKUP_OWNED, 1, extX, extY, extZ, extVW, extInt, -1, STREAMER_PICKUP_SD);
+	CreateDynamic3DTextLabel(label, -1, extX, extY, extZ, 10.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, extVW, extInt, -1, STREAMER_3D_TEXT_LABEL_SD);
+	CreateDynamicMapIcon(extX, extY, extZ, ownerid == -1 ? ICON_FOR_SALE : ICON_SOLD, 0xFFFFFF, extVW, extInt, -1, STREAMER_MAP_ICON_SD, MAPICON_LOCAL_CHECKPOINT);
+	/*mysql_format(sqlHandle, query, sizeof(query), "INSERT INTO `Houses` VALUES(%d, %d, %f, %f, %f, %f, %f, %f, %d, %d, %d, %d, %d, %d);", houseid, ownerid, extX, extY, extZ, intX, intY, intZ, extVW, extInt, intVW, intInt, cost, locked);
+	mysql_query(sqlHandle, query);*/
 }
 
 stock DestroyHouse(MySQL:sqlHandle, houseid)

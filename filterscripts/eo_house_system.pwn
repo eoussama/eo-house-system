@@ -186,10 +186,6 @@ CMD:eohouse(playerid, params[])
             (bInfo[playerid][e_ownerid] == -1 ? "None" : GetPlayerNameFromId(bInfo[playerid][e_ownerid])),
             (bInfo[playerid][e_locked] == true ? "True" : "False"));
             ShowPlayerDialog(playerid, DIALOG_EO_HOUSE_CREATE, DIALOG_STYLE_TABLIST, "EO House - Create", content, "Select", "Cancel");
-            /*houseid = Iter_Free(House);
-            
-            CreateHouse(handle, houseid, -1, posX, posY, posZ, intInfo[interior][e_intPos][e_posX], intInfo[interior][e_intPos][e_posY], intInfo[interior][e_intPos][e_posZ], GetPlayerVirtualWorld(playerid), GetPlayerInterior(playerid), houseid, intInfo[interior][e_intId], cost);
-            SendClientMessage(playerid, -1, "House was created!");*/
         }
 
         else if(!strcmp(action, "destroy", true))
@@ -330,7 +326,10 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
                 
                 case 10:
                 {
-
+                    new houseid = Iter_Free(House), Float:coordinates[E_COORDINATES], interior = bInfo[playerid][e_interior];
+            
+                    GetPlayerPos(playerid, coordinates[e_posX], coordinates[e_posY], coordinates[e_posZ]);
+                    CreateHouse(houseid, -1, coordinates[e_posX], coordinates[e_posY], coordinates[e_posZ], intInfo[interior][e_intPos][e_posX], intInfo[interior][e_intPos][e_posY], intInfo[interior][e_intPos][e_posZ], GetPlayerVirtualWorld(playerid), GetPlayerInterior(playerid), houseid, intInfo[interior][e_intId], bInfo[playerid][e_cost], bInfo[playerid][e_locked]);
                 }
 
                 default:
