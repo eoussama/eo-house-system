@@ -1,20 +1,19 @@
 /*
 
-                            _____ _____   _   _                        _____           _                 
-                            |  ___|  _  | | | | |                      /  ___|         | |                
-                            | |__ | | | | | |_| | ___  _   _ ___  ___  \ `--. _   _ ___| |_ ___ _ __ ___  
-                            |  __|| | | | |  _  |/ _ \| | | / __|/ _ \  `--. \ | | / __| __/ _ \ '_ ` _ \ 
-                            | |___\ \_/ / | | | | (_) | |_| \__ \  __/ /\__/ / |_| \__ \ ||  __/ | | | | |
-                            \____/ \___/  \_| |_/\___/ \__,_|___/\___| \____/ \__, |___/\__\___|_| |_| |_|
-                                                                            __/ |                      
-                                                                            |___/                 
-                                                    
-                                    @title:                 EO House System
-                                    @author:                EOussama a.k.a Compton
-                                    @date:                  4/3/2018
-                                    @github repository:     https://github.com/EOussama/EO-House-System
-
-                                    > House include
+		_____ _____   _   _                        _____           _                 
+		|  ___|  _  | | | | |                      /  ___|         | |                
+		| |__ | | | | | |_| | ___  _   _ ___  ___  \ `--. _   _ ___| |_ ___ _ __ ___  
+		|  __|| | | | |  _  |/ _ \| | | / __|/ _ \  `--. \ | | / __| __/ _ \ '_ ` _ \ 
+		| |___\ \_/ / | | | | (_) | |_| \__ \  __/ /\__/ / |_| \__ \ ||  __/ | | | | |
+		\____/ \___/  \_| |_/\___/ \__,_|___/\___| \____/ \__, |___/\__\___|_| |_| |_|
+														__/ |                      
+														|___/                 
+								
+				@title:                 EO House System
+				@version                0.2.0
+				@author:                EOussama a.k.a Compton
+				@date:                  4/3/2018
+				@github repository:     https://github.com/EOussama/EO-House-System
 
 */
 
@@ -248,7 +247,7 @@ stock CreateHouse(houseid, ownerid, Float:extX, Float:extY, Float:extZ, Float:in
 	format(label, sizeof(label), "%s{FFFFFF}\nPress 'N' to interact", ownerid == -1 ? costString : "");
 	CreateDynamicPickup(ownerid == -1 ? PICKUP_FOR_SALE : PICKUP_OWNED, 1, extX, extY, extZ, extVW, extInt, -1, STREAMER_PICKUP_SD);
 	CreateDynamic3DTextLabel(label, -1, extX, extY, extZ, 10.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, extVW, extInt, -1, STREAMER_3D_TEXT_LABEL_SD);
-	CreateDynamicMapIcon(extX, extY, extZ, ownerid == -1 ? ICON_FOR_SALE : ICON_SOLD, 0xFFFFFF, extVW, extInt, -1, STREAMER_MAP_ICON_SD, MAPICON_LOCAL_CHECKPOINT);
+	CreateDynamicMapIcon(extX, extY, extZ, ownerid == -1 ? ICON_FOR_SALE : ICON_SOLD, 0xFFFFFF, extVW, extInt, -1, STREAMER_MAP_ICON_SD, MAPICON_LOCAL);
 	/*mysql_format(sqlHandle, query, sizeof(query), "INSERT INTO `Houses` VALUES(%d, %d, %f, %f, %f, %f, %f, %f, %d, %d, %d, %d, %d, %d);", houseid, ownerid, extX, extY, extZ, intX, intY, intZ, extVW, extInt, intVW, intInt, cost, locked);
 	mysql_query(sqlHandle, query);*/
 }
